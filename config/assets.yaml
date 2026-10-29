@@ -1,0 +1,29 @@
+benchmark:
+  ticker: "^BVSP"
+  name: "Ibovespa"
+
+sectors:
+  bancos:
+    - ITUB4.SA
+    - BBAS3.SA
+    - BBDC4.SA
+
+  energia_eletrica:
+    - EGIE3.SA
+    - EQTL3.SA
+    - TAEE11.SA
+
+  petroleo_e_gas:
+    - PETR4.SA
+    - PRIO3.SA
+    - VBBR3.SA
+
+  agro_e_alimentos:
+    - SLCE3.SA
+    - SMTO3.SA
+    - JBSS3.SA
+
+  mineracao_e_materiais:
+    - VALE3.SA
+    - GGBR4.SA
+    - CSNA3.SA

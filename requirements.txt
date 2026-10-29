@@ -1,0 +1,9 @@
+pandas
+numpy
+yfinance
+pyarrow
+duckdb
+streamlit
+plotly
+PyYAML
+pytest

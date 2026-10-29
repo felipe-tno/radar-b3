@@ -1,0 +1,23 @@
+
+# Ambiente virtual
+.venv/
+venv/
+env/
+
+# Cache e arquivos compilados do Python
+__pycache__/
+*.py[cod]
+
+# Testes
+.pytest_cache/
+
+# Metadados gerados pela instalação
+*.egg-info/
+
+# Segredos e variáveis de ambiente
+.env
+.env.*
+
+# Dados de mercado baixados ou processados
+data/raw/*
+data/processed/*
