@@ -1,34 +1,74 @@
+from pathlib import Path
+import pandas as pd
+
+from radar_b3.config import carregar_configuracao
 from radar_b3.ingestion.market_data import buscar_dados
-import time
 
 
-def executar_pipeline(ticker):
-    for tentativa in range(3):
-        try:
+def ingerir_dados():
+    config = carregar_configuracao()
+
+    dataframes = []
+
+    # Coleta os benchmarks.
+    for benchmark_id, benchmark in config["benchmarks"].items():
+        ticker = benchmark["ticker"]
+        dados = buscar_dados(ticker)
+
+        if dados is None:
+            print(f"Dados ausentes para benchmark {ticker}.")
+            continue
+
+        dados["tipo_ativo"] = "benchmark"
+        dados["benchmark_id"] = benchmark_id
+        dados["setor"] = None
+
+        dataframes.append(dados)
+
+    # Coleta as ações de cada setor.
+    for setor, tickers in config["sectors"].items():
+        for ticker in tickers:
             dados = buscar_dados(ticker)
 
-            
             if dados is None:
-                print(f"Dados ausentes.")
-                return
+                print(f"Dados ausentes para {ticker}.")
+                continue
 
+            dados["tipo_ativo"] = "acao"
+            dados["benchmark_id"] = None
+            dados["setor"] = setor
 
-            print(f"Dados obtidos para {ticker}")
-            print(dados.head())
-            return
+            dataframes.append(dados)
 
+    if not dataframes:
+        raise RuntimeError("Nenhum dado foi coletado.")
 
-        except Exception as erro:
-            print(f"Falha na coleta de {ticker}, {erro}, Tentativa {tentativa + 1}")
+    df_bronze = pd.concat(dataframes, ignore_index=True)
 
-            if tentativa < 2:
-                print("Tentando novamente em 5 segundos...")
-                time.sleep(5)
+    # Organiza as colunas para facilitar a inspeção.
+    colunas_identificacao = [
+        "Date",
+        "ticker",
+        "tipo_ativo",
+        "setor",
+        "benchmark_id",
+    ]
 
-    print(f"Falha na coleta de {ticker} após 3 tentativas. Certifique-se que o ticker existe e que você está conectado à internet.")
+    outras_colunas = [
+        coluna
+        for coluna in df_bronze.columns
+        if coluna not in colunas_identificacao
+    ]
 
+    df_bronze = df_bronze[
+        colunas_identificacao + outras_colunas
+    ]
 
+    return df_bronze
 
 
 if __name__ == "__main__":
-    executar_pipeline("PETR4.SA")
+    df_bronze = ingerir_dados()
+    print(df_bronze.head())
+    print(df_bronze.shape)
+    print(df_bronze["ticker"].nunique())

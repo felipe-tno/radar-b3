@@ -1,16 +1,28 @@
-
+import pandas as pd
 import yfinance as yf
+
 
 def buscar_dados(ticker):
     df = yf.download(
         ticker,
-        period="1mo",
+        period="7mo",
         interval="1d",
-        auto_adjust=True
+        auto_adjust=True,
+        progress=False,
     )
 
-    if df.empty: #Se o df estiver vazio, significa que não foi possível obter os dados do ticker
-        print(f"Não foi possível obter dados para {ticker}.")
+    if df.empty:
         return None
 
-    return df #Se o df não estiver vazio, significa que foi possível obter os dados do ticker e retorna o df
+    # O yfinance pode retornar colunas MultiIndex.
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+
+    # A data passa a ser uma coluna explícita.
+    df = df.reset_index()
+
+    # Identifica o ativo de origem.
+    df["ticker"] = ticker
+
+    df.columns.name = None
+    return df
