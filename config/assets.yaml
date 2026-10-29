@@ -1,6 +1,10 @@
-benchmark:
-  ticker: "^BVSP"
-  name: "Ibovespa"
+benchmarks:
+  ibovespa:
+    ticker: "^BVSP"
+    name: "Ibovespa"
+  ivvb11:
+    ticker: "IVVB11.SA"
+    name: "IVVB11"
 
 sectors:
   bancos:
@@ -21,7 +25,6 @@ sectors:
   agro_e_alimentos:
     - SLCE3.SA
     - SMTO3.SA
-    - JBSS3.SA
 
   mineracao_e_materiais:
     - VALE3.SA
